@@ -1,9 +1,13 @@
+//ZAQ Bank System
+//Zulqarnain Saeed  
+
+
 #include <iostream>
 #include <fstream>
 using namespace std;
 
 
-
+//this one is saving customers in file
 void saveCustomers(char names[][50], char accNums[][20], char pins[][20], char cnics[][20],
     int balances[], int ages[], int incomes[], int userCount) {
     ofstream fout("customers.txt");
@@ -13,7 +17,7 @@ void saveCustomers(char names[][50], char accNums[][20], char pins[][20], char c
     }
     fout.close();
 }
-
+//this one is loading customer from files into arrays and variables
 void loadCustomers(char names[][50], char accNums[][20], char pins[][20], char cnics[][20],
     int balances[], int ages[], int incomes[], int* userCount) {
     ifstream fin("customers.txt");
@@ -27,12 +31,12 @@ void loadCustomers(char names[][50], char accNums[][20], char pins[][20], char c
         fin >> ages[*userCount];
         fin.ignore();
         fin >> incomes[*userCount];
-        fin.ignore(); 
+        fin.ignore();
         (*userCount)++;
     }
     fin.close();
 }
-
+//this one is use for search operation if we want index of customer
 int getUserIndexByAcc(const char acc[], char accNums[][20], int userCount) {
     for (int i = 0; i < userCount; i++) {
         int match = 1;
@@ -48,13 +52,13 @@ int getUserIndexByAcc(const char acc[], char accNums[][20], int userCount) {
     }
     return -1;
 }
-
+//this one is recording transaction in file
 void recordTransaction(const char acc[], const char type[], int amount) {
     ofstream fout("transactions.txt", ios::app);
     fout << acc << ',' << type << ',' << amount << '\n';
     fout.close();
 }
-
+//this will show all account information
 void viewAccountInfo(int index, char names[][50], char accNums[][20], char cnics[][20],
     int ages[], int incomes[], int balances[]) {
     cout << "\nName: " << names[index] << endl;
@@ -64,7 +68,7 @@ void viewAccountInfo(int index, char names[][50], char accNums[][20], char cnics
     cout << "Income: Rs. " << incomes[index] << endl;
     cout << "Balance: Rs. " << balances[index] << endl;
 }
-
+//this will show you the transaction history
 void viewTransactionHistory(const char acc[]) {
     ifstream fin("transactions.txt");
     char line[100];
@@ -86,7 +90,7 @@ void viewTransactionHistory(const char acc[]) {
     fin.close();
 }
 
-
+//this is chatbot that answer queries
 void showChatbot() {
     int choice;
 
@@ -134,7 +138,7 @@ void showChatbot() {
     }
 }
 
-
+//this is currency converter if you want to check money in another formate
 void currencyConverter() {
     double amount; int choice;
     cout << "\n--- Currency Converter ---\nEnter amount: "; cin >> amount;
@@ -147,14 +151,14 @@ void currencyConverter() {
     else { cout << "Invalid choice."; return; }
     cout << "Equivalent in PKR: Rs. " << pkr << endl;
 }
-
+//this is loan eligibility checker 
 void checkLoanEligibility(int index, int incomes[], int ages[]) {
     if (incomes[index] >= 30000 && ages[index] > 19)
         cout << "You are eligible for a loan.\n";
     else
         cout << "You are not eligible for a loan.\n";
 }
-
+//this will transfer money from one account to other
 void transferMoney(int senderIndex, char accNums[][20], char pins[][20], int balances[],
     char names[][50], char cnics[][20], int ages[], int incomes[],
     int userCount) {
@@ -189,7 +193,7 @@ void transferMoney(int senderIndex, char accNums[][20], char pins[][20], int bal
     cout << "Transfer successful.\n";
 }
 
-
+//checking the validity of pin
 int isValidPIN(const char pin[]) {
     int length = 0, hasSpecial = 0;
     for (int i = 0; pin[i] != '\0'; i++) {
@@ -201,7 +205,7 @@ int isValidPIN(const char pin[]) {
     return (length >= 8 && hasSpecial);
 
 }
-
+//this is the customer menu
 void customerMenu(int index, char names[][50], char accNums[][20], char pins[][20], char cnics[][20],
     int balances[], int ages[], int incomes[], int userCount) {
     int choice;
@@ -265,10 +269,10 @@ void customerMenu(int index, char names[][50], char accNums[][20], char pins[][2
             }
         }
         else if (choice == 6) {
-            showChatbot(); // should be defined to follow rules
+            showChatbot();
         }
         else if (choice == 7) {
-            currencyConverter(); // should be defined to follow rules
+            currencyConverter();
         }
         else if (choice == 8) {
             checkLoanEligibility(index, incomes, ages);
@@ -288,7 +292,7 @@ void customerMenu(int index, char names[][50], char accNums[][20], char pins[][2
 
 
 
-
+//customer login page
 void loginCustomer(char names[][50], char accNums[][20], char pins[][20], char cnics[][20],
     int balances[], int ages[], int incomes[], int userCount) {
     char acc[20], pin[20];
@@ -317,7 +321,7 @@ void loginCustomer(char names[][50], char accNums[][20], char pins[][20], char c
     else
         cout << "Incorrect PIN.\n";
 }
-
+//employee login page
 bool employeeLogin() {
     char username[30], password[20];
 
@@ -327,35 +331,42 @@ bool employeeLogin() {
     cin >> password;
 
     // Check special character in username
-    int hasSpecial = 0;
+    int hasSpecialInUsername = 0;
     for (int i = 0; username[i] != '\0'; i++) {
         if (username[i] == '@' || username[i] == '#' || username[i] == '$') {
-            hasSpecial = 1;
+            hasSpecialInUsername = 1;
             break;
         }
     }
 
-    // Password length check
-    int passLength = 0;
+    // Check password length and special character
+    int passLength = 0, hasSpecialInPassword = 0;
     for (int i = 0; password[i] != '\0'; i++) {
         passLength++;
+        if (password[i] == '@' || password[i] == '#' || password[i] == '$') {
+            hasSpecialInPassword = 1;
+        }
     }
 
     // Display validation errors
     bool hasError = false;
-    if (!hasSpecial) {
-        cout << "Special character is missing in username.\n";
+    if (!hasSpecialInUsername) {
+        cout << "Username must contain a special character (@, #, or $).\n";
         hasError = true;
     }
     if (passLength <= 8) {
         cout << "Password length must be greater than 8.\n";
         hasError = true;
     }
+    if (!hasSpecialInPassword) {
+        cout << "Password must contain at least one special character (@, #, or $).\n";
+        hasError = true;
+    }
     if (hasError) return false;
 
     // Match credentials
     const char correctUsername[] = "admin@123";
-    const char correctPassword[] = "admin12345";
+    const char correctPassword[] = "admin@12345";
 
     int usernameMatch = 1, passwordMatch = 1;
     int i = 0;
@@ -387,6 +398,7 @@ bool employeeLogin() {
 }
 
 
+//create account option 
 void createAccount(char names[][50], char accNums[][20], char pins[][20], char cnics[][20],
     int balances[], int ages[], int incomes[], int* userCount, int maxUsers) {
     if (*userCount >= maxUsers) {
@@ -434,7 +446,7 @@ void createAccount(char names[][50], char accNums[][20], char pins[][20], char c
 
     cout << "Account created successfully.\n";
 }
-
+//this will show all the accounts
 void viewAllAccounts(char names[][50], char accNums[][20], int balances[], int userCount) {
     cout << "\nAll Accounts:\n";
     for (int i = 0; i < userCount; i++) {
@@ -442,7 +454,7 @@ void viewAllAccounts(char names[][50], char accNums[][20], int balances[], int u
     }
 }
 
-
+//this will search for specific customer
 void searchCustomer(char accNums[][20], char names[][50], char cnics[][20],
     int balances[], int ages[], int incomes[], int userCount) {
     char acc[20];
@@ -455,7 +467,7 @@ void searchCustomer(char accNums[][20], char names[][50], char cnics[][20],
     else
         viewAccountInfo(index, names, accNums, cnics, ages, incomes, balances);
 }
-
+//this will change customer information if you want
 void updateInfo(char accNums[][20], char names[][50], char cnics[][20],
     int balances[], int ages[], int incomes[], char pins[][20],
     int userCount) {
@@ -479,7 +491,7 @@ void updateInfo(char accNums[][20], char names[][50], char cnics[][20],
     saveCustomers(names, accNums, pins, cnics, balances, ages, incomes, userCount);
     cout << "Info updated.\n";
 }
-
+//this will delete the account 
 void deleteAccount(char accNums[][20], char names[][50], char cnics[][20], char pins[][20],
     int balances[], int ages[], int incomes[], int* userCount) {
     char acc[20];
@@ -509,7 +521,7 @@ void deleteAccount(char accNums[][20], char names[][50], char cnics[][20], char 
     saveCustomers(names, accNums, pins, cnics, balances, ages, incomes, *userCount);
     cout << "Account deleted.\n";
 }
-
+//this will show the total balance of bank
 void viewTotalBalance(int balances[], int userCount) {
     int total = 0;
     for (int i = 0; i < userCount; i++) {
@@ -517,7 +529,7 @@ void viewTotalBalance(int balances[], int userCount) {
     }
     cout << "Total Bank Balance: Rs. " << total << "\n";
 }
-
+//this will sort the customers in order of alphabatics
 void sortByName(char names[][50], char accNums[][20], char pins[][20], char cnics[][20],
     int balances[], int ages[], int incomes[], int userCount) {
     for (int i = 0; i < userCount - 1; i++) {
@@ -559,7 +571,7 @@ void sortByName(char names[][50], char accNums[][20], char pins[][20], char cnic
 
     viewAllAccounts(names, accNums, balances, userCount);
 }
-
+//this will sort on base of bank balance
 void sortByBalance(char names[][50], char accNums[][20], char pins[][20], char cnics[][20],
     int balances[], int ages[], int incomes[], int userCount) {
     for (int i = 0; i < userCount - 1; i++) {
@@ -603,7 +615,7 @@ void sortByBalance(char names[][50], char accNums[][20], char pins[][20], char c
 }
 
 
-
+//this will show maximum and minimum balance account in bank
 void minMaxBalanceHolder(char names[][50], int balances[], int userCount) {
     if (userCount == 0) return;
 
@@ -616,7 +628,7 @@ void minMaxBalanceHolder(char names[][50], int balances[], int userCount) {
     cout << "Lowest Balance: " << names[min] << " | Rs. " << balances[min] << "\n";
     cout << "Highest Balance: " << names[max] << " | Rs. " << balances[max] << "\n";
 }
-
+//this is emplyee menue page
 void employeeMenu(char names[][50], char accNums[][20], char pins[][20], char cnics[][20],
     int balances[], int ages[], int incomes[], int* userCount, int maxUsers) {
     int ch;
@@ -664,18 +676,29 @@ void employeeMenu(char names[][50], char accNums[][20], char pins[][20], char cn
 
     } while (ch != 10);
 }
+void credentials() {
+    cout << "Employee :" << endl;
+    cout << "Username:" << " admin@123" << " Password:" << " admin@12345" << endl;
+    cout << endl;
+    cout << "Customer 1:" << endl;
+    cout << "Name:" << " Baber Ali " << "Account number:" << " 1000" << " Pin:" << " baberali@" << endl;
+    cout << endl;
+    cout << "Customer 2:" << endl;
+    cout << "Name:" << " Darya Khan " << "Account number:" << " 1002" << " Pin:" << " daryakhan@" << endl;
 
+}
+//this is function for the structure of bank
 void drawBankFront() {
     cout << "\n";
     cout << "     ============================================================================\n";
-    cout << "     ||                               Z - S A T   B A N K                       ||\n";
+    cout << "     ||                               Z A Q   B A N K                          ||\n";
     cout << "     ============================================================================\n";
     cout << "     ||    [=========]     [=========]     [=========]     [=========]         ||\n";
     cout << "     ||    |         |     |         |     |         |     |         |         ||\n";
     cout << "     ||    |   ATM   |     | Window  |     |  Office |     |   Door  |         ||\n";
     cout << "     ||    |_________|     |_________|     |_________|     |_________|         ||\n";
     cout << "     ||                                                                        ||\n";
-    cout << "     ||=========================|   WELCOME TO Z-SAT BANK   |==================||\n";
+    cout << "     ||=========================|   WELCOME TO ZAQ BANK   |==================||\n";
     cout << "     ||                                                                        ||\n";
     cout << "     ||                            Serving with Trust Since 2025               ||\n";
     cout << "     ||========================================================================||\n";
@@ -685,7 +708,7 @@ void drawBankFront() {
 }
 
 
-
+//main function
 
 int main() {
     const int MAX_USERS = 100;
@@ -702,10 +725,10 @@ int main() {
     drawBankFront();
     int choice;
     do {
-     
-       
+
+
         cout << "======= WELCOME ========" << endl;
-        cout << "1. Login as Customer\n2. Login as Employee\n3. Exit\nEnter choice: ";
+        cout << "1. Login as Customer\n2. Login as Employee\n3. Credentials to login\n4. Exit\nEnter choice: ";
         cin >> choice;
 
         switch (choice) {
@@ -718,8 +741,10 @@ int main() {
                 employeeMenu(names, accNums, pins, cnics, balances, ages, incomes, &userCount, MAX_USERS);
             }
             break;
-
         case 3:
+            credentials();
+                break;
+        case 4:
             cout << "Exiting Program.\n";
             break;
 
@@ -727,7 +752,7 @@ int main() {
             cout << "Invalid option.\n";
         }
 
-    } while (choice != 3);
+    } while (choice != 4);
 
     return 0;
 }
